@@ -1,0 +1,50 @@
+{
+    "name": "tarampampam/guzzle-url-mock",
+    "description": "URLs (fixed and regexps-based) mock handler for Guzzle 6",
+    "keywords": [
+        "guzzle",
+        "http",
+        "mock",
+        "handler"
+    ],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "tarampampam",
+            "homepage": "https://github.com/tarampampam"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "guzzlehttp/guzzle": "~6.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~5.7.10 || ^6.4 || ~7.0",
+        "symfony/var-dumper": "~3.2 || ^4.0",
+        "phpstan/phpstan": "~0.9 || ^0.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "Tarampampam\\GuzzleUrlMock\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tarampampam\\GuzzleUrlMock\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "@php ./vendor/bin/phpunit --no-coverage",
+        "test-cover": "@php ./vendor/bin/phpunit --coverage-html='./coverage/html'",
+        "phpstan": "@php ./vendor/bin/phpstan analyze --no-progress --ansi --level=max ./src"
+    },
+    "support": {
+        "issues": "https://github.com/tarampampam/guzzle-url-mock/issues",
+        "source": "https://github.com/tarampampam/guzzle-url-mock"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "prefer-stable": true
+}
