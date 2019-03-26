@@ -2,7 +2,7 @@
   <img alt="logo" src="https://hsto.org/webt/0v/qb/0p/0vqb0pp6ntyyd8mbdkkj0wsllwo.png" width="70" height="70" />
 </p>
 
-# Guzzle URLs mock handler
+# [Guzzle][guzzle_link] URLs mock handler
 
 [![Version][badge_packagist_version]][link_packagist]
 [![Version][badge_php_version]][link_packagist]
@@ -12,7 +12,7 @@
 [![Downloads count][badge_downloads_count]][link_packagist]
 [![License][badge_license]][link_license]
 
-This package for easy mocking URLs _(fixed and regexps-based)_ using Guzzle 6.
+This package for easy mocking URLs _(fixed and regexps-based)_ using [Guzzle 6][guzzle_link].
 
 ## Install
 
@@ -28,7 +28,41 @@ $ composer require tarampampam/guzzle-url-mock "^1.0"
 
 ## Usage
 
-{% Usage descriptions goes here %}
+Create Guzzle client instance with passing handler instance, setup it, and make request:
+
+```php
+<?php
+
+use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
+use Tarampampam\GuzzleUrlMock\UrlsMockHandler;
+
+$handler = new UrlsMockHandler;
+$client  = new Client([
+    'handler' => HandlerStack::create($handler),
+]);
+
+$handler->onUriRequested('https://goo.gl', 'get', new Response(
+    200, ['foo' => ['bar']], '<h1>All looks fine!</h1>'
+));
+
+$handler->onUriRegexpRequested('~https:\/\/goo\.gl\/.*~', 'post', new Response(
+    404, [], 'Nothing found'
+));
+
+$client->request('get', 'https://goo.gl')->getBody()->getContents(); // '<h1>All looks fine!</h1>'
+$client->request('post', 'https://goo.gl/foo', ['http_errors' => false])->getBody()->getContents(); // 'Nothing found'
+```
+
+Also you can use next handler methods:
+
+Method name | Description
+----------- | -----------
+`getRequestsUriHistory()` | Get all requests URIs history
+`getLastRequestedUri()` | Get last requested URI
+`getLastRequest()` | Get last request instance
+`getLastOptions()` | Get last request options
 
 ### Testing
 
@@ -81,3 +115,4 @@ This is open-sourced software licensed under the [MIT License][link_license].
 [link_pulls]:https://github.com/tarampampam/guzzle-url-mock/pulls
 [link_license]:https://github.com/tarampampam/guzzle-url-mock/blob/master/LICENSE
 [getcomposer]:https://getcomposer.org/download/
+[guzzle_link]:https://github.com/guzzle/guzzle
