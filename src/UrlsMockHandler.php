@@ -302,7 +302,7 @@ class UrlsMockHandler implements \Countable
      * @param RequestInterface       $request
      * @param array                  $options
      * @param ResponseInterface|null $response
-     * @param null                   $reason
+     * @param mixed                  $reason
      */
     protected function invokeStats(
         RequestInterface $request,
