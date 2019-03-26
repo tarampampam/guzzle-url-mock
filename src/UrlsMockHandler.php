@@ -113,7 +113,7 @@ class UrlsMockHandler implements \Countable
 
         return $response->then(
             function ($value) use ($request, $options) {
-                /** @var callable|Exception|PromiseInterface|ResponseInterface|mixed $value */
+                /* @var callable|Exception|PromiseInterface|ResponseInterface|mixed $value */
                 $this->invokeStats($request, $options, $value);
 
                 if (isset($options['sink'])) {
