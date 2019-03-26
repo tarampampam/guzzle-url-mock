@@ -313,7 +313,7 @@ class UrlsMockHandler implements \Countable
         $reason = null
     ) {
         if (isset($options['on_stats']) && \is_callable($on_stats = $options['on_stats'])) {
-            $on_stats(new TransferStats($request, $response, 0, $reason));
+            $on_stats(new TransferStats($request, $response, null, $reason));
         }
     }
 }
