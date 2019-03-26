@@ -17,8 +17,8 @@ use GuzzleHttp\Exception\RequestException;
 class UrlsMockHandler implements \Countable
 {
     const
-        METHOD   = 'method',
-        RESPONSE = 'response';
+        METHOD     = 'method';
+    const RESPONSE = 'response';
 
     /**
      * Registered URI regexp patterns.
@@ -113,7 +113,7 @@ class UrlsMockHandler implements \Countable
 
         return $response->then(
             function ($value) use ($request, $options) {
-                /** @var callable|Exception|PromiseInterface|ResponseInterface $response */
+                /* @var callable|Exception|PromiseInterface|ResponseInterface $response */
                 $this->invokeStats($request, $options, $value);
 
                 if (isset($options['sink'])) {
@@ -270,8 +270,6 @@ class UrlsMockHandler implements \Countable
                 return $rule_array[static::RESPONSE];
             }
         }
-
-        return null;
     }
 
     /**
