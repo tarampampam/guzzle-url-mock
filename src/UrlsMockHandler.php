@@ -16,8 +16,8 @@ use GuzzleHttp\Exception\RequestException;
 
 class UrlsMockHandler implements \Countable
 {
-    const
-        METHOD     = 'method';
+    const METHOD   = 'method';
+
     const RESPONSE = 'response';
 
     /**
