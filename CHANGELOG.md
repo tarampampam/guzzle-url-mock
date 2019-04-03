@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][keepachangelog] and this project adheres to [Semantic Versioning][semver].
 
+## v1.0.2
+
+### Changed
+
+- Exception message "There is no action for requested URI" now contains request method name
+
 ## v1.0.1
 
 ### Changed
