@@ -83,7 +83,7 @@ class UrlsMockHandler implements \Countable
         $response = $this->findResponseForRequest($request);
 
         if ($response === null) {
-            throw new OutOfBoundsException('There is no action for requested URI');
+            throw new OutOfBoundsException('There is no action for requested URI: ' . $request->getUri()->__toString());
         }
 
         // Fix "empty response content" error
