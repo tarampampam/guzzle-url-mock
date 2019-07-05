@@ -178,22 +178,29 @@ class UrlsMockHandler implements \Countable
      * @param string                                                $uri_pattern
      * @param string                                                $method
      * @param callable|Exception|PromiseInterface|ResponseInterface $response
+     * @param bool                                                  $to_top Push action into the top of stack
      *
      * @throws InvalidArgumentException
      *
      * @return void
      */
-    public function onUriRegexpRequested(string $uri_pattern, string $method, $response)
+    public function onUriRegexpRequested(string $uri_pattern, string $method, $response, bool $to_top = false)
     {
         if (@\preg_match($uri_pattern, '') === false) {
             throw new InvalidArgumentException("Wrong URI pattern [$uri_pattern] passed");
         }
 
         if ($this->validateResponse($response)) {
-            $this->uri_patterns[$uri_pattern] = [
+            $entry = [
                 static::METHOD   => $method,
                 static::RESPONSE => $response,
             ];
+
+            if ($to_top === true) {
+                $this->uri_patterns = [$uri_pattern => $entry] + $this->uri_patterns;
+            } else {
+                $this->uri_patterns[$uri_pattern] = $entry;
+            }
         }
     }
 
@@ -311,7 +318,8 @@ class UrlsMockHandler implements \Countable
         array $options,
         ResponseInterface $response = null,
         $reason = null
-    ) {
+    )
+    {
         if (isset($options['on_stats']) && \is_callable($on_stats = $options['on_stats'])) {
             $on_stats(new TransferStats($request, $response, null, $reason));
         }

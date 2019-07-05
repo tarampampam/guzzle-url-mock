@@ -127,4 +127,64 @@ class UrlsMockHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($code2, $response3->getStatusCode());
         $this->assertSame($headers2, $response3->getHeaders());
     }
+
+    /**
+     * @small
+     *
+     * @return void
+     */
+    public function testRegisterWithPassingToTopParameter()
+    {
+        $this->handler->onUriRegexpRequested('~https:\/\/goo\.gl\/.*~', $method = 'post', new Response(
+            $code1 = 200,
+            $headers1 = [],
+            $body1 = 'Content 1'
+        ));
+
+        $this->handler->onUriRegexpRequested('~https:\/\/goo\.gl\/foo.*~', $method, new Response(
+            $code2 = 202,
+            $headers2 = [],
+            $body2 = 'Content 2'
+        ), true);
+
+        $guzzle = new Client([
+            'handler' => HandlerStack::create($this->handler),
+        ]);
+
+        $response1 = $guzzle->request($method, 'https://goo.gl/foo');
+
+        $this->assertSame($body2, $response1->getBody()->getContents());
+        $this->assertSame($code2, $response1->getStatusCode());
+        $this->assertSame($headers2, $response1->getHeaders());
+    }
+
+    /**
+     * @small
+     *
+     * @return void
+     */
+    public function testRegisterWithoutPassingToTopParameter()
+    {
+        $this->handler->onUriRegexpRequested('~https:\/\/goo\.gl\/.*~', $method = 'post', new Response(
+            $code1 = 200,
+            $headers1 = [],
+            $body1 = 'Content 1'
+        ));
+
+        $this->handler->onUriRegexpRequested('~https:\/\/goo\.gl\/foo.*~', $method, new Response(
+            $code2 = 202,
+            $headers2 = [],
+            $body2 = 'Content 2'
+        ));
+
+        $guzzle = new Client([
+            'handler' => HandlerStack::create($this->handler),
+        ]);
+
+        $response1 = $guzzle->request($method, 'https://goo.gl/foo');
+
+        $this->assertSame($body1, $response1->getBody()->getContents());
+        $this->assertSame($code1, $response1->getStatusCode());
+        $this->assertSame($headers1, $response1->getHeaders());
+    }
 }
