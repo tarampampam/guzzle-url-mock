@@ -197,10 +197,11 @@ class UrlsMockHandler implements \Countable
                 static::RESPONSE => $response,
             ];
 
+            $index = $method . ' ' . $uri_pattern;
             if ($to_top === true) {
-                $this->uri_patterns = [$uri_pattern => $entry] + $this->uri_patterns;
+                $this->uri_patterns = [$index => $entry] + $this->uri_patterns;
             } else {
-                $this->uri_patterns[$uri_pattern] = $entry;
+                $this->uri_patterns[$index] = $entry;
             }
         }
     }
@@ -277,10 +278,22 @@ class UrlsMockHandler implements \Countable
         }
 
         foreach ($this->uri_patterns as $uri_pattern => $rule_array) {
+            $uri_pattern = $this->removeMethodFromPattern($uri_pattern);
             if (\preg_match($uri_pattern, $uri) && \mb_strtolower($rule_array[static::METHOD]) === $method) {
                 return $rule_array[static::RESPONSE];
             }
         }
+    }
+
+    /**
+     * Removes the http from the uri method
+     *
+     * @param string $uri_pattern A uri pattern contain a method e.g. get ~https:\/\/goo\.gl~
+     * @return string e.g. ~https:\/\/goo\.gl~
+     */
+    private function removeMethodFromPattern($uri_pattern)
+    {
+        return substr($uri_pattern, strpos($uri_pattern, ' ') + 1);
     }
 
     /**
