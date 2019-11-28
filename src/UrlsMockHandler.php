@@ -331,7 +331,7 @@ class UrlsMockHandler implements \Countable
     /**
      * Removes the http from the uri method.
      *
-     * @param string $uri_pattern A uri pattern contain a method e.g. get ~https:\/\/goo\.gl~
+     * @param string $uri_pattern A uri pattern containing a method e.g. get ~https:\/\/goo\.gl~
      *
      * @return string e.g. ~https:\/\/goo\.gl~
      */
