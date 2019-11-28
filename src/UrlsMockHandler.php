@@ -5,14 +5,14 @@ declare(strict_types = 1);
 namespace Tarampampam\GuzzleUrlMock;
 
 use Exception;
-use OutOfBoundsException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\TransferStats;
 use InvalidArgumentException;
+use OutOfBoundsException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Exception\RequestException;
 
 class UrlsMockHandler implements \Countable
 {
@@ -165,7 +165,7 @@ class UrlsMockHandler implements \Countable
     public function onUriRequested(string $uri, string $method, $response)
     {
         if ($this->validateResponse($response)) {
-            $index = $method . ' ' . $uri;
+            $index                   = $method . ' ' . $uri;
             $this->uri_fixed[$index] = [
                 static::METHOD   => $method,
                 static::RESPONSE => $response,
@@ -286,17 +286,6 @@ class UrlsMockHandler implements \Countable
     }
 
     /**
-     * Removes the http from the uri method
-     *
-     * @param string $uri_pattern A uri pattern contain a method e.g. get ~https:\/\/goo\.gl~
-     * @return string e.g. ~https:\/\/goo\.gl~
-     */
-    private function removeMethodFromPattern($uri_pattern)
-    {
-        return substr($uri_pattern, strpos($uri_pattern, ' ') + 1);
-    }
-
-    /**
      * Make response instance validation.
      *
      * @param mixed $response
@@ -337,5 +326,16 @@ class UrlsMockHandler implements \Countable
         if (isset($options['on_stats']) && \is_callable($on_stats = $options['on_stats'])) {
             $on_stats(new TransferStats($request, $response, null, $reason));
         }
+    }
+
+    /**
+     * Removes the http from the uri method
+     *
+     * @param string $uri_pattern A uri pattern contain a method e.g. get ~https:\/\/goo\.gl~
+     * @return string e.g. ~https:\/\/goo\.gl~
+     */
+    private function removeMethodFromPattern($uri_pattern)
+    {
+        return substr($uri_pattern, strpos($uri_pattern, ' ') + 1);
     }
 }
