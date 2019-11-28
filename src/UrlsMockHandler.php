@@ -165,7 +165,8 @@ class UrlsMockHandler implements \Countable
     public function onUriRequested(string $uri, string $method, $response)
     {
         if ($this->validateResponse($response)) {
-            $this->uri_fixed[$uri] = [
+            $index = $method . ' ' . $uri;
+            $this->uri_fixed[$index] = [
                 static::METHOD   => $method,
                 static::RESPONSE => $response,
             ];
@@ -270,8 +271,9 @@ class UrlsMockHandler implements \Countable
         $uri    = $request->getUri()->__toString();
         $method = \mb_strtolower($request->getMethod());
 
-        if (isset($this->uri_fixed[$uri]) && \mb_strtolower($this->uri_fixed[$uri][static::METHOD]) === $method) {
-            return $this->uri_fixed[$uri][static::RESPONSE];
+        $index = $method . ' ' . $uri;
+        if (isset($this->uri_fixed[$index])) {
+            return $this->uri_fixed[$index][static::RESPONSE];
         }
 
         foreach ($this->uri_patterns as $uri_pattern => $rule_array) {
