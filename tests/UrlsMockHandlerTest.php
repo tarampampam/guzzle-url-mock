@@ -208,4 +208,25 @@ class UrlsMockHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(200, $response1->getStatusCode());
         $this->assertEquals(200, $response2->getStatusCode());
     }
+
+    /**
+     * @small
+     *
+     * @return void
+     */
+    public function testSameUriDifferentHttpMethodsRegex()
+    {
+        $this->handler->onUriRegexpRequested('~https:\/\/goo\.gl~', 'get', new Response(200));
+        $this->handler->onUriRegexpRequested('~https:\/\/goo\.gl~', 'patch', new Response(200));
+
+        $guzzle = new Client([
+            'handler' => HandlerStack::create($this->handler),
+        ]);
+
+        $response1 = $guzzle->request('get', 'https://goo.gl');
+        $response2 = $guzzle->request('patch', 'https://goo.gl', ['body' => 'patched']);
+
+        $this->assertEquals(200, $response1->getStatusCode());
+        $this->assertEquals(200, $response2->getStatusCode());
+    }
 }
