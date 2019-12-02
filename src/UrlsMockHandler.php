@@ -195,13 +195,13 @@ class UrlsMockHandler implements \Countable
             if ($to_top === true) {
                 $entry = [
                     static::RESPONSE => $response,
-                    static::TIMES =>    $times,
+                    static::TIMES    => $times,
                 ];
                 $top = [
                     $uri_pattern => [
                         static::METHOD   => $method,
                         static::RESPONSE => [$entry],
-                    ]
+                    ],
                 ];
                 $this->uri_patterns = $top + $this->uri_patterns;
             } else {
