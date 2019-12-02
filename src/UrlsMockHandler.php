@@ -168,16 +168,7 @@ class UrlsMockHandler implements \Countable
     public function onUriRequested(string $uri, string $method, $response, $times = -1)
     {
         if ($this->validateResponse($response)) {
-            $shouldRegisterUri = !isset($this->uri_fixed[$uri]);
-            if ($shouldRegisterUri) {
-                $this->uri_fixed[$uri] = [
-                    static::METHOD => $method,
-                ];
-            }
-            $this->uri_fixed[$uri][static::RESPONSE][] = [
-                static::RESPONSE => $response,
-                static::TIMES => $times
-            ];
+            $this->registerUri($this->uri_fixed, $uri, $method, $response, $times);
         }
     }
 
@@ -188,27 +179,33 @@ class UrlsMockHandler implements \Countable
      * @param string                                                $method
      * @param callable|Exception|PromiseInterface|ResponseInterface $response
      * @param bool                                                  $to_top      Push action into the top of stack
+     * @param int                                                   $times       Number of times to respond (-1 is infinite)
      *
      * @throws InvalidArgumentException
      *
      * @return void
      */
-    public function onUriRegexpRequested(string $uri_pattern, string $method, $response, bool $to_top = false)
+    public function onUriRegexpRequested(string $uri_pattern, string $method, $response, bool $to_top = false, $times = -1)
     {
         if (@\preg_match($uri_pattern, '') === false) {
             throw new InvalidArgumentException("Wrong URI pattern [$uri_pattern] passed");
         }
 
         if ($this->validateResponse($response)) {
-            $entry = [
-                static::METHOD   => $method,
-                static::RESPONSE => $response,
-            ];
-
             if ($to_top === true) {
-                $this->uri_patterns = [$uri_pattern => $entry] + $this->uri_patterns;
+                $entry = [
+                    static::RESPONSE => $response,
+                    static::TIMES => $times
+                ];
+                $top = [
+                    $uri_pattern => [
+                        static::METHOD   => $method,
+                        static::RESPONSE => [$entry]
+                    ]
+                ];
+                $this->uri_patterns = $top + $this->uri_patterns;
             } else {
-                $this->uri_patterns[$uri_pattern] = $entry;
+                $this->registerUri($this->uri_patterns, $uri_pattern, $method, $response, $times);
             }
         }
     }
@@ -265,16 +262,9 @@ class UrlsMockHandler implements \Countable
     public function count(): int
     {
         $num = 0;
-        foreach ($this->uri_fixed as $uri_fixed) {
-            foreach ($uri_fixed[static::RESPONSE] as $response) {
-                $times = $response[static::TIMES];
-                if ($times == -1) {
-                    $times = 1;
-                }
-                $num+= $times;
-            }
-        }
-        return $num + \count($this->uri_patterns);
+        $num += $this->countResponses($this->uri_fixed);
+        $num += $this->countResponses($this->uri_patterns);
+        return $num;
     }
 
     /**
@@ -290,13 +280,15 @@ class UrlsMockHandler implements \Countable
         $method = \mb_strtolower($request->getMethod());
 
         if (isset($this->uri_fixed[$uri]) && \mb_strtolower($this->uri_fixed[$uri][static::METHOD]) === $method) {
-            return $this->processAndReturnFixedResponse($uri);
+            return $this->processAndReturnResponse($this->uri_fixed, 0, $uri);
         }
 
+        $index = 0;
         foreach ($this->uri_patterns as $uri_pattern => $rule_array) {
             if (\preg_match($uri_pattern, $uri) && \mb_strtolower($rule_array[static::METHOD]) === $method) {
-                return $rule_array[static::RESPONSE];
+                return $this->processAndReturnResponse($this->uri_patterns, $index, $uri_pattern);
             }
+            $index++;
         }
     }
 
@@ -344,34 +336,86 @@ class UrlsMockHandler implements \Countable
     }
 
     /**
-     * Removes the fixed response for $uri
+     * Counts the number of responses in an array
      *
-     * @param string $uri The request URI
+     * @param array $uri_array Either $this->uri_fixed or $this->uri_patterns
+     *
+     * @return int
+     */
+    private function countResponses($uri_array) {
+        $num = 0;
+        foreach ($uri_array as $uri_item) {
+            foreach ($uri_item[static::RESPONSE] as $response) {
+                $times = $response[static::TIMES];
+                if ($times == -1) {
+                    $times = 1;
+                }
+                $num+= $times;
+            }
+        }
+        return $num;
+    }
+
+    /**
+     * Register the uri
+     *
+     * @param array                                                 $uri_array Either $this->uri_fixed or $this->uri_patterns
+     * @param string                                                $uri
+     * @param string                                                $method
+     * @param callable|Exception|PromiseInterface|ResponseInterface $response
+     * @param int                                                   $times     Number of times to respond (-1 is infinite)
      *
      * @return void
      */
-    private function removeFixedResponse($uri) {
-        unset($this->uri_fixed[$uri][static::RESPONSE][0]);
-        $this->uri_fixed[$uri][static::RESPONSE] = array_values($this->uri_fixed[$uri][static::RESPONSE]);    
+    private function registerUri(array &$uri_array, string $uri, string $method, $response, int $times) {
+        $shouldRegisterUri = !isset($uri_array[$uri]);
+        if ($shouldRegisterUri) {
+            $uri_array[$uri] = [
+                static::METHOD => $method,
+                static::RESPONSE => []
+            ];
+        }
+        $uri_array[$uri][static::RESPONSE][] = [
+            static::RESPONSE => $response,
+            static::TIMES => $times
+        ];
+    }
+
+    /**
+     * Removes the response for $uri
+     *
+     * @param array  $uri_array Either $this->uri_fixed or $this->uri_patterns
+     * @param string $uri       The request URI
+     *
+     * @return void
+     */
+    private function removeResponse(&$uri_array, $uri) {
+        unset($uri_array[$uri][static::RESPONSE][0]);
+        $uri_array[$uri][static::RESPONSE] = array_values($uri_array[$uri][static::RESPONSE]);
+        if (count($uri_array[$uri][static::RESPONSE]) == 0) {
+            unset($uri_array[$uri]);
+        }
     }
 
     /**
      * Decrements the fixed response and removes it if it's the last one
      *
-     * @param string $uri The request URI
+     * @param array  $uri_array Either $this->uri_fixed or $this->uri_patterns
+     * @param int    $index     The index of the array which contains the response
+     * @param string $uri       The request URI
      *
      * @return mixed|null
      */
-    private function processAndReturnFixedResponse($uri) {
-        $response = $this->uri_fixed[$uri][static::RESPONSE][0];
+    private function processAndReturnResponse(&$uri_array, $index = 0, $uri) {
+        $response = $uri_array[$uri][static::RESPONSE][$index];
 
         $isLastResponse = $response[static::TIMES] == 1;
         if ($isLastResponse) {
-            $this->removeFixedResponse($uri);
+            $this->removeResponse($uri_array, $uri);
         } else {
             $hasInfiniteResponses = $response[static::TIMES] == -1;
             if (!$hasInfiniteResponses) {
-                $this->uri_fixed[$uri][static::RESPONSE][0][static::TIMES]--;
+                $uri_array[$uri][static::RESPONSE][$index][static::TIMES]--;
             }
         }
     
