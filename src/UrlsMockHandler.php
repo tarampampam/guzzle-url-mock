@@ -195,7 +195,7 @@ class UrlsMockHandler implements \Countable
             if ($to_top === true) {
                 $entry = [
                     static::RESPONSE => $response,
-                    static::TIMES =>    $times
+                    static::TIMES =>    $times,
                 ];
                 $top = [
                     $uri_pattern => [
@@ -372,7 +372,7 @@ class UrlsMockHandler implements \Countable
      */
     private function registerUri(array &$uri_array, string $uri, string $method, $response, int $times)
     {
-        $shouldRegisterUri = !isset($uri_array[$uri]);
+        $shouldRegisterUri = ! isset($uri_array[$uri]);
         if ($shouldRegisterUri) {
             $uri_array[$uri] = [
                 static::METHOD   => $method,
@@ -425,6 +425,6 @@ class UrlsMockHandler implements \Countable
             }
         }
 
-        return $response[static::RESPONSE];    
+        return $response[static::RESPONSE];
     }
 }
