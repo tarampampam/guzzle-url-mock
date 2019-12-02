@@ -20,6 +20,8 @@ class UrlsMockHandler implements \Countable
 
     const RESPONSE = 'response';
 
+    const TIMES = 'times';
+
     /**
      * Registered URI regexp patterns.
      *
@@ -157,17 +159,24 @@ class UrlsMockHandler implements \Countable
      * @param string                                                $uri
      * @param string                                                $method
      * @param callable|Exception|PromiseInterface|ResponseInterface $response
+     * @param int                                                   $times    Number of times to respond (-1 is infinite)
      *
      * @throws InvalidArgumentException
      *
      * @return void
      */
-    public function onUriRequested(string $uri, string $method, $response)
+    public function onUriRequested(string $uri, string $method, $response, $times = -1)
     {
         if ($this->validateResponse($response)) {
-            $this->uri_fixed[$uri] = [
-                static::METHOD   => $method,
+            $shouldRegisterUri = !isset($this->uri_fixed[$uri]);
+            if ($shouldRegisterUri) {
+                $this->uri_fixed[$uri] = [
+                    static::METHOD => $method,
+                ];
+            }
+            $this->uri_fixed[$uri][static::RESPONSE][] = [
                 static::RESPONSE => $response,
+                static::TIMES => $times
             ];
         }
     }
@@ -255,7 +264,17 @@ class UrlsMockHandler implements \Countable
      */
     public function count(): int
     {
-        return \count($this->uri_fixed) + \count($this->uri_patterns);
+        $num = 0;
+        foreach ($this->uri_fixed as $uri_fixed) {
+            foreach ($uri_fixed[static::RESPONSE] as $response) {
+                $times = $response[static::TIMES];
+                if ($times == -1) {
+                    $times = 1;
+                }
+                $num+= $times;
+            }
+        }
+        return $num + \count($this->uri_patterns);
     }
 
     /**
@@ -271,7 +290,7 @@ class UrlsMockHandler implements \Countable
         $method = \mb_strtolower($request->getMethod());
 
         if (isset($this->uri_fixed[$uri]) && \mb_strtolower($this->uri_fixed[$uri][static::METHOD]) === $method) {
-            return $this->uri_fixed[$uri][static::RESPONSE];
+            return $this->processAndReturnFixedResponse($uri);
         }
 
         foreach ($this->uri_patterns as $uri_pattern => $rule_array) {
@@ -322,5 +341,40 @@ class UrlsMockHandler implements \Countable
         if (isset($options['on_stats']) && \is_callable($on_stats = $options['on_stats'])) {
             $on_stats(new TransferStats($request, $response, null, $reason));
         }
+    }
+
+    /**
+     * Removes the fixed response for $uri
+     *
+     * @param string $uri The request URI
+     *
+     * @return void
+     */
+    private function removeFixedResponse($uri) {
+        unset($this->uri_fixed[$uri][static::RESPONSE][0]);
+        $this->uri_fixed[$uri][static::RESPONSE] = array_values($this->uri_fixed[$uri][static::RESPONSE]);    
+    }
+
+    /**
+     * Decrements the fixed response and removes it if it's the last one
+     *
+     * @param string $uri The request URI
+     *
+     * @return mixed|null
+     */
+    private function processAndReturnFixedResponse($uri) {
+        $response = $this->uri_fixed[$uri][static::RESPONSE][0];
+
+        $isLastResponse = $response[static::TIMES] == 1;
+        if ($isLastResponse) {
+            $this->removeFixedResponse($uri);
+        } else {
+            $hasInfiniteResponses = $response[static::TIMES] == -1;
+            if (!$hasInfiniteResponses) {
+                $this->uri_fixed[$uri][static::RESPONSE][0][static::TIMES]--;
+            }
+        }
+    
+        return $response[static::RESPONSE];    
     }
 }
