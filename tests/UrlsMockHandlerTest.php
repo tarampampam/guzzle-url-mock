@@ -239,10 +239,67 @@ class UrlsMockHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(1, $this->handler->count(), 'There should be 1 response left');
 
         $response2 = $guzzle->request('get', 'https://goo.gl');
-        // $this->assertSame($body2, $response2->getBody()->getContents(), 'Third request should return second response');
+        $this->assertSame($body2, $response2->getBody()->getContents(), 'Third request should return second response');
         $this->assertSame(0, $this->handler->count(), 'There should be no responses left');
 
         // Should throw an OutOfBoundsException
         $guzzle->request('get', 'https://goo.gl');
+    }
+
+    /**
+     * @small
+     *
+     * @return void
+     */
+    public function testDifferentResponsesSameRegexUrl()
+    {
+        $this->handler->onUriRegexpRequested('~https:\/\/goo\.gl\/.*~', 'get', new Response());
+
+        $guzzle = new Client([
+            'handler' => HandlerStack::create($this->handler),
+        ]);
+
+        $response1 = $guzzle->request('get', 'https://goo.gl/foo');
+        $this->assertSame(200, $response1->getStatusCode());
+        $this->assertSame(1, $this->handler->count(), 'After one request there should still be one response left');
+
+        $response1 = $guzzle->request('get', 'https://goo.gl/foo');
+        $this->assertSame(200, $response1->getStatusCode());
+        $this->assertSame(1, $this->handler->count(), 'After two requests there should still be one response left');
+    }
+
+    /**
+     * @small
+     *
+     * @expectedException OutOfBoundsException
+     *
+     * @return void
+     */
+    public function testDifferentResponsesSameRegexUri()
+    {
+        $body1 = 'first response';
+        $this->handler->onUriRegexpRequested('~https:\/\/goo\.gl\/.*~', 'get', new Response(200, [], $body1), false, 2);
+        $body2 = 'second response';
+        $this->handler->onUriRegexpRequested('~https:\/\/goo\.gl\/.*~', 'get', new Response(200, [], $body2), false, 1);
+        $this->assertSame(3, $this->handler->count(), 'There should be three responses');
+
+        $guzzle = new Client([
+            'handler' => HandlerStack::create($this->handler),
+        ]);
+
+        $response1 = $guzzle->request('get', 'https://goo.gl/foo');
+        $this->assertSame($body1, $response1->getBody()->getContents(), 'First request should return first response');
+        $this->assertSame(2, $this->handler->count(), 'There should be 2 responses left');
+
+        $response1 = $guzzle->request('get', 'https://goo.gl/foo');
+        $this->assertSame($body1, $response1->getBody()->getContents(), 'Second request should return first response');
+        $this->assertSame(1, $this->handler->count(), 'There should be 1 response left');
+
+        $response2 = $guzzle->request('get', 'https://goo.gl/foo');
+        $this->assertSame($body2, $response2->getBody()->getContents(), 'Third request should return second response');
+        $this->assertSame(0, $this->handler->count(), 'There should be no responses left');
+
+        // Should throw an OutOfBoundsException
+        $guzzle->request('get', 'https://goo.gl/foo');
     }
 }
