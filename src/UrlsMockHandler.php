@@ -165,7 +165,8 @@ class UrlsMockHandler implements \Countable
     public function onUriRequested(string $uri, string $method, $response)
     {
         if ($this->validateResponse($response)) {
-            $this->uri_fixed[$uri] = [
+            $index                   = $method . ' ' . $uri;
+            $this->uri_fixed[$index] = [
                 static::METHOD   => $method,
                 static::RESPONSE => $response,
             ];
@@ -196,10 +197,11 @@ class UrlsMockHandler implements \Countable
                 static::RESPONSE => $response,
             ];
 
+            $index = $method . ' ' . $uri_pattern;
             if ($to_top === true) {
-                $this->uri_patterns = [$uri_pattern => $entry] + $this->uri_patterns;
+                $this->uri_patterns = [$index => $entry] + $this->uri_patterns;
             } else {
-                $this->uri_patterns[$uri_pattern] = $entry;
+                $this->uri_patterns[$index] = $entry;
             }
         }
     }
@@ -270,11 +272,13 @@ class UrlsMockHandler implements \Countable
         $uri    = $request->getUri()->__toString();
         $method = \mb_strtolower($request->getMethod());
 
-        if (isset($this->uri_fixed[$uri]) && \mb_strtolower($this->uri_fixed[$uri][static::METHOD]) === $method) {
-            return $this->uri_fixed[$uri][static::RESPONSE];
+        $index = $method . ' ' . $uri;
+        if (isset($this->uri_fixed[$index])) {
+            return $this->uri_fixed[$index][static::RESPONSE];
         }
 
         foreach ($this->uri_patterns as $uri_pattern => $rule_array) {
+            $uri_pattern = $this->removeMethodFromPattern($uri_pattern);
             if (\preg_match($uri_pattern, $uri) && \mb_strtolower($rule_array[static::METHOD]) === $method) {
                 return $rule_array[static::RESPONSE];
             }
@@ -324,5 +328,17 @@ class UrlsMockHandler implements \Countable
         if (isset($options['on_stats']) && \is_callable($on_stats = $options['on_stats'])) {
             $on_stats(new TransferStats($request, $response, null, $reason));
         }
+    }
+
+    /**
+     * Removes the http from the uri method.
+     *
+     * @param string $uri_pattern A uri pattern containing a method e.g. get ~https:\/\/goo\.gl~
+     *
+     * @return string e.g. ~https:\/\/goo\.gl~
+     */
+    private function removeMethodFromPattern($uri_pattern)
+    {
+        return mb_substr($uri_pattern, mb_strpos($uri_pattern, ' ') + 1);
     }
 }

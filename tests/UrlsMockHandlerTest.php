@@ -189,4 +189,46 @@ class UrlsMockHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($code1, $response1->getStatusCode());
         $this->assertSame($headers1, $response1->getHeaders());
     }
+
+    /**
+     * @small
+     *
+     * @return void
+     */
+    public function testSameUriDifferentHttpMethods()
+    {
+        $this->handler->onUriRequested($uri = 'https://goo.gl', $method1 = 'get', new Response($code1 = 201));
+        $this->handler->onUriRequested($uri, $method2 = 'patch', new Response($code2 = 202));
+
+        $guzzle = new Client([
+            'handler' => HandlerStack::create($this->handler),
+        ]);
+
+        $response1 = $guzzle->request($method1, $uri);
+        $response2 = $guzzle->request($method2, $uri, ['body' => 'patched']);
+
+        $this->assertEquals($code1, $response1->getStatusCode());
+        $this->assertEquals($code2, $response2->getStatusCode());
+    }
+
+    /**
+     * @small
+     *
+     * @return void
+     */
+    public function testSameUriDifferentHttpMethodsRegex()
+    {
+        $this->handler->onUriRegexpRequested('~https:\/\/goo\.gl~', $method1 = 'get', new Response($code1 = 201));
+        $this->handler->onUriRegexpRequested('~https:\/\/goo\.gl~', $method2 = 'patch', new Response($code2 = 202));
+
+        $guzzle = new Client([
+            'handler' => HandlerStack::create($this->handler),
+        ]);
+
+        $response1 = $guzzle->request($method1, 'https://goo.gl');
+        $response2 = $guzzle->request($method2, 'https://goo.gl', ['body' => 'patched']);
+
+        $this->assertEquals($code1, $response1->getStatusCode());
+        $this->assertEquals($code2, $response2->getStatusCode());
+    }
 }
