@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Tarampampam\GuzzleUrlMock;
 
@@ -44,7 +44,7 @@ class UrlsMockHandler implements \Countable
     /**
      * Options, passed with last processed request.
      *
-     * @var array|null
+     * @var mixed[]|null
      */
     protected $last_options;
 
@@ -59,7 +59,7 @@ class UrlsMockHandler implements \Countable
      * Invoke incoming request.
      *
      * @param RequestInterface $request
-     * @param array            $options
+     * @param mixed[]          $options
      *
      * @throws InvalidArgumentException
      * @throws OutOfBoundsException
@@ -243,7 +243,7 @@ class UrlsMockHandler implements \Countable
     /**
      * Get the last received request options.
      *
-     * @return array|null
+     * @return mixed[]|null
      */
     public function getLastOptions()
     {
@@ -313,9 +313,11 @@ class UrlsMockHandler implements \Countable
      * Invoke stats.
      *
      * @param RequestInterface       $request
-     * @param array                  $options
+     * @param mixed[]                $options
      * @param ResponseInterface|null $response
      * @param mixed                  $reason
+     *
+     * @return void
      */
     protected function invokeStats(
         RequestInterface $request,
