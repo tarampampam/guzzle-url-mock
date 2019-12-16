@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Tarampampam\GuzzleUrlMock;
 
 use Exception;
-use GuzzleHttp\Exception\RequestException;
+use OutOfBoundsException;
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\TransferStats;
 use InvalidArgumentException;
-use OutOfBoundsException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Promise\PromiseInterface;
+use GuzzleHttp\Exception\RequestException;
 
 class UrlsMockHandler implements \Countable
 {
