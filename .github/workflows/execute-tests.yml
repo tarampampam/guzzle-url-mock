@@ -32,7 +32,7 @@ jobs: # Docs: <https://help.github.com/en/articles/workflow-syntax-for-github-ac
         if: matrix.php == '7.4'
         env:
           DEBIAN_FRONTEND: noninteractive
-        run: sudo apt-get install -y php-mbstring
+        run: sudo apt-get install -y php7.4-mbstring
 
       - name: Install Composer 'hirak/prestissimo' package
         run: composer global require hirak/prestissimo --update-no-dev
