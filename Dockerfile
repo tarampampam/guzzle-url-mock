@@ -1,6 +1,6 @@
 FROM composer:1.8.6 AS composer
 
-FROM php:7.0-alpine
+FROM php:7.1-alpine
 
 ENV \
     COMPOSER_ALLOW_SUPERUSER="1" \
