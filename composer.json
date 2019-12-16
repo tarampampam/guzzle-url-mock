@@ -22,7 +22,7 @@
     "require-dev": {
         "phpunit/phpunit": "~5.7.10 || ^6.4 || ~7.0",
         "symfony/var-dumper": "~3.2 || ^4.0",
-        "phpstan/phpstan": "^0.11.3"
+        "phpstan/phpstan": "~0.9"
     },
     "autoload": {
         "psr-4": {
@@ -37,7 +37,7 @@
     "scripts": {
         "phpunit": "@php ./vendor/bin/phpunit --no-coverage --colors=always",
         "phpunit-cover": "@php ./vendor/bin/phpunit --coverage-html='./coverage/html'",
-        "phpstan": "@php ./vendor/bin/phpstan analyze -c ./phpstan.neon.dist --no-progress --ansi",
+        "phpstan": "@php ./vendor/bin/phpstan analyze --level max --no-progress --ansi ./src",
         "test": [
             "@phpstan",
             "@phpunit"
