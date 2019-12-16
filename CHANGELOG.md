@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][keepachangelog] and this project adheres to [Semantic Versioning][semver].
 
+## v1.1.1
+
+### Changed
+
+- Updated code annotations in handler
+- Docker environment dor package developing
+- CS fixer settings
+
+### Added
+
+- GitHub actions settings
+
 ## v1.1.0
 
 ### Added
