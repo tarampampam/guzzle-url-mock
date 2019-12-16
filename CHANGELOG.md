@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog][keepachangelog] and this project adher
 
 ### Changed
 
+- Minimal required PHP now is `7.1` 
 - Updated code annotations in handler
 - Docker environment dor package developing
 - CS fixer settings
