@@ -27,12 +27,7 @@ jobs: # Docs: <https://help.github.com/en/articles/workflow-syntax-for-github-ac
         uses: shivammathur/setup-php@master # Action page: <https://github.com/shivammathur/setup-php>
         with:
           php-version: ${{ matrix.php }}
-
-      - name: Install php extension 'mbstring' # fix missing extension for php 7.4
-        if: matrix.php == '7.4'
-        env:
-          DEBIAN_FRONTEND: noninteractive
-        run: sudo apt-get install -y php7.4-mbstring
+          extensions: mbstring, dom
 
       - name: Install Composer 'hirak/prestissimo' package
         run: composer global require hirak/prestissimo --update-no-dev
