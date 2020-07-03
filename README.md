@@ -11,7 +11,7 @@
 [![Downloads count][badge_downloads_count]][link_packagist]
 [![License][badge_license]][link_license]
 
-This package for easy mocking URLs _(fixed and regexps-based)_ using [Guzzle 6][guzzle_link].
+This package for easy mocking URLs _(fixed and regexps-based)_ using [Guzzle 6/Guzzle 7][guzzle_link].
 
 ## Install
 
