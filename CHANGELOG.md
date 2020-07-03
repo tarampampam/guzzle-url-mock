@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][keepachangelog] and this project adheres to [Semantic Versioning][semver].
 
+## v1.1.3
+
+### Changed
+
+- Maximal `guzzlehttp/guzzle` package version now is `~7.0`
+
 ## v1.1.2
 
 ### Fixed
