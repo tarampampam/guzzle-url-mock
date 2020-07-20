@@ -165,7 +165,7 @@ class UrlsMockHandler implements \Countable
     public function onUriRequested(string $uri, string $method, $response)
     {
         if ($this->validateResponse($response)) {
-            $index                   = $method . ' ' . $uri;
+            $index                   = $this->buildIndex($method, $uri);
             $this->uri_fixed[$index] = [
                 static::METHOD   => $method,
                 static::RESPONSE => $response,
@@ -197,7 +197,7 @@ class UrlsMockHandler implements \Countable
                 static::RESPONSE => $response,
             ];
 
-            $index = $method . ' ' . $uri_pattern;
+            $index = $this->buildIndex($method, $uri_pattern);
             if ($to_top === true) {
                 $this->uri_patterns = [$index => $entry] + $this->uri_patterns;
             } else {
@@ -270,16 +270,16 @@ class UrlsMockHandler implements \Countable
     protected function findResponseForRequest(RequestInterface $request)
     {
         $uri    = $request->getUri()->__toString();
-        $method = \mb_strtolower($request->getMethod());
+        $method = \mb_strtoupper($request->getMethod());
 
-        $index = $method . ' ' . $uri;
+        $index = $this->buildIndex($method, $uri);
         if (isset($this->uri_fixed[$index])) {
             return $this->uri_fixed[$index][static::RESPONSE];
         }
 
         foreach ($this->uri_patterns as $uri_pattern => $rule_array) {
             $uri_pattern = $this->removeMethodFromPattern($uri_pattern);
-            if (\preg_match($uri_pattern, $uri) && \mb_strtolower($rule_array[static::METHOD]) === $method) {
+            if (\preg_match($uri_pattern, $uri) && \mb_strtoupper($rule_array[static::METHOD]) === $method) {
                 return $rule_array[static::RESPONSE];
             }
         }
@@ -328,6 +328,19 @@ class UrlsMockHandler implements \Countable
         if (isset($options['on_stats']) && \is_callable($on_stats = $options['on_stats'])) {
             $on_stats(new TransferStats($request, $response, null, $reason));
         }
+    }
+
+    /**
+     * Build index for registered requests.
+     *
+     * @param string $method
+     * @param string $uri
+     *
+     * @return string
+     */
+    protected function buildIndex(string $method, string $uri): string
+    {
+        return mb_strtoupper($method) . ' ' . $uri;
     }
 
     /**
