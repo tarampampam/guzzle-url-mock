@@ -165,7 +165,7 @@ class UrlsMockHandler implements \Countable
     public function onUriRequested(string $uri, string $method, $response)
     {
         if ($this->validateResponse($response)) {
-            $index                   = $method . ' ' . $uri;
+            $index                   = $this->buildIndex($method, $uri);
             $this->uri_fixed[$index] = [
                 static::METHOD   => $method,
                 static::RESPONSE => $response,
@@ -197,7 +197,7 @@ class UrlsMockHandler implements \Countable
                 static::RESPONSE => $response,
             ];
 
-            $index = $method . ' ' . $uri_pattern;
+            $index = $this->buildIndex($method, $uri_pattern);
             if ($to_top === true) {
                 $this->uri_patterns = [$index => $entry] + $this->uri_patterns;
             } else {
@@ -272,7 +272,7 @@ class UrlsMockHandler implements \Countable
         $uri    = $request->getUri()->__toString();
         $method = \mb_strtoupper($request->getMethod());
 
-        $index = $method . ' ' . $uri;
+        $index = $this->buildIndex($method, $uri);
         if (isset($this->uri_fixed[$index])) {
             return $this->uri_fixed[$index][static::RESPONSE];
         }
@@ -328,6 +328,19 @@ class UrlsMockHandler implements \Countable
         if (isset($options['on_stats']) && \is_callable($on_stats = $options['on_stats'])) {
             $on_stats(new TransferStats($request, $response, null, $reason));
         }
+    }
+
+    /**
+     * Build index for registered requests.
+     *
+     * @param string $method
+     * @param string $uri
+     *
+     * @return string
+     */
+    protected function buildIndex(string $method, string $uri): string
+    {
+        return mb_strtoupper($method) . ' ' . $uri;
     }
 
     /**

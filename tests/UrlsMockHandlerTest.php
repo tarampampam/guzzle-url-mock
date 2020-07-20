@@ -231,4 +231,31 @@ class UrlsMockHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($code1, $response1->getStatusCode());
         $this->assertEquals($code2, $response2->getStatusCode());
     }
+
+    /**
+     * @small
+     *
+     * @return void
+     */
+    public function testCaseInsensitiveHttpMethod()
+    {
+        $this->handler->onUriRequested('https://goo.gl/1', 'GET', new Response(200));
+        $this->handler->onUriRequested('https://goo.gl/2', 'get', new Response(200));
+        $this->handler->onUriRequested('https://goo.gl/3', 'gEt', new Response(200));
+        $this->handler->onUriRequested('https://goo.gl/4', 'Post', new Response(200));
+
+        $guzzle = new Client([
+            'handler' => HandlerStack::create($this->handler),
+        ]);
+
+        $response1 = $guzzle->request('get', 'https://goo.gl/1');
+        $response2 = $guzzle->request('GET', 'https://goo.gl/2');
+        $response3 = $guzzle->request('GeT', 'https://goo.gl/3');
+        $response4 = $guzzle->request('POST', 'https://goo.gl/4');
+
+        $this->assertEquals(200, $response1->getStatusCode());
+        $this->assertEquals(200, $response2->getStatusCode());
+        $this->assertEquals(200, $response3->getStatusCode());
+        $this->assertEquals(200, $response4->getStatusCode());
+    }
 }
