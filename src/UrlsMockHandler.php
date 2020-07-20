@@ -270,7 +270,7 @@ class UrlsMockHandler implements \Countable
     protected function findResponseForRequest(RequestInterface $request)
     {
         $uri    = $request->getUri()->__toString();
-        $method = \mb_strtolower($request->getMethod());
+        $method = \mb_strtoupper($request->getMethod());
 
         $index = $method . ' ' . $uri;
         if (isset($this->uri_fixed[$index])) {
@@ -279,7 +279,7 @@ class UrlsMockHandler implements \Countable
 
         foreach ($this->uri_patterns as $uri_pattern => $rule_array) {
             $uri_pattern = $this->removeMethodFromPattern($uri_pattern);
-            if (\preg_match($uri_pattern, $uri) && \mb_strtolower($rule_array[static::METHOD]) === $method) {
+            if (\preg_match($uri_pattern, $uri) && \mb_strtoupper($rule_array[static::METHOD]) === $method) {
                 return $rule_array[static::RESPONSE];
             }
         }
