@@ -6,13 +6,9 @@ The format is based on [Keep a Changelog][keepachangelog] and this project adher
 
 ## UNRELEASED
 
-### Changed
-
-- Http method names in the stack from lowercase to uppercase
-
 ### Fixed
 
-- Uppercase method names finding. Closes [#8](https://github.com/tarampampam/guzzle-url-mock/issues/8)
+- Any case method names finding [#8](https://github.com/tarampampam/guzzle-url-mock/issues/8)
 
 ## v1.2.0
 
