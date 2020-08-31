@@ -103,7 +103,7 @@ This is open-sourced software licensed under the [MIT License][link_license].
 [badge_pulls]:https://img.shields.io/github/issues-pr/tarampampam/guzzle-url-mock.svg?style=flat-square&maxAge=180
 [link_releases]:https://github.com/tarampampam/guzzle-url-mock/releases
 [link_packagist]:https://packagist.org/packages/tarampampam/guzzle-url-mock
-[link_build_status]:https://travis-ci.com/tarampampam/guzzle-url-mock
+[link_build_status]:https://github.com/tarampampam/guzzle-url-mock/actions
 [link_coverage]:https://codecov.io/gh/tarampampam/guzzle-url-mock/
 [link_changes_log]:https://github.com/tarampampam/guzzle-url-mock/blob/master/CHANGELOG.md
 [link_issues]:https://github.com/tarampampam/guzzle-url-mock/issues
