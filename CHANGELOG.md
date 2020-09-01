@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][keepachangelog] and this project adheres to [Semantic Versioning][semver].
 
+## v1.3.0
+
+### Changed
+
+- Minimal required PHP version now is `7.2` [#PR10]
+- GitHub actions as main CI [#PR10]
+- Dev-dependency `phpstan/phpstan` updated [#PR10]
+
+### Added
+
+- Dependency `ext-mbstring` [#PR10]
+- `declare(strict_types=1);` into each PHP file [#PR10]
+- Type definitions in methods parameters and return values, where it possible [#PR10]
+
+### Fixed
+
+- Autoload paths in `composer.json` (eg.: `src` &rarr; `src/`) [#PR10]
+
+[#PR10]:https://github.com/tarampampam/guzzle-url-mock/pull/10
+
 ## v1.2.1
 
 ### Fixed

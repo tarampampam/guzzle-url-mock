@@ -18,7 +18,7 @@ This package for easy mocking URLs _(fixed and regexps-based)_ using [Guzzle 6/G
 Require this package with composer using the following command:
 
 ```shell
-$ composer require tarampampam/guzzle-url-mock "^1.0"
+$ composer require tarampampam/guzzle-url-mock "^1.3"
 ```
 
 > Installed `composer` is required ([how to install composer][getcomposer]).
@@ -65,12 +65,12 @@ Method name | Description
 
 ### Testing
 
-For package testing we use `phpunit` framework. Just write into your terminal:
+For package testing we use `phpunit` framework and `docker-ce` + `docker-compose` as develop environment. So, just write into your terminal after repository cloning:
 
-```shell
-$ git clone git@github.com:tarampampam/guzzle-url-mock.git ./guzzle-url-mock && cd $_
-$ composer install
-$ composer test
+```shell script
+$ make build
+$ make latest # or 'make lowest'
+$ make test
 ```
 
 ## Changes log
@@ -93,7 +93,7 @@ This is open-sourced software licensed under the [MIT License][link_license].
 
 [badge_packagist_version]:https://img.shields.io/packagist/v/tarampampam/guzzle-url-mock.svg?maxAge=180
 [badge_php_version]:https://img.shields.io/packagist/php-v/tarampampam/guzzle-url-mock.svg?longCache=true
-[badge_build_status]:https://travis-ci.com/tarampampam/guzzle-url-mock.svg?branch=master
+[badge_build_status]:https://img.shields.io/github/workflow/status/tarampampam/guzzle-url-mock/tests?maxAge=30
 [badge_coverage]:https://img.shields.io/codecov/c/github/tarampampam/guzzle-url-mock/master.svg?maxAge=60
 [badge_downloads_count]:https://img.shields.io/packagist/dt/tarampampam/guzzle-url-mock.svg?maxAge=180
 [badge_license]:https://img.shields.io/packagist/l/tarampampam/guzzle-url-mock.svg?longCache=true

@@ -24,7 +24,7 @@ class UrlsMockHandlerTest extends \PHPUnit\Framework\TestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -34,7 +34,7 @@ class UrlsMockHandlerTest extends \PHPUnit\Framework\TestCase
     /**
      * @return void
      */
-    public function testConstants()
+    public function testConstants(): void
     {
         $this->assertSame('method', UrlsMockHandler::METHOD);
         $this->assertSame('response', UrlsMockHandler::RESPONSE);
@@ -43,7 +43,7 @@ class UrlsMockHandlerTest extends \PHPUnit\Framework\TestCase
     /**
      * @return void
      */
-    public function testCount()
+    public function testCount(): void
     {
         $this->assertSame(0, $this->handler->count());
 
@@ -57,7 +57,7 @@ class UrlsMockHandlerTest extends \PHPUnit\Framework\TestCase
     /**
      * @return void
      */
-    public function testGetLastAndHistory()
+    public function testGetLastAndHistory(): void
     {
         $this->handler->onUriRegexpRequested(
             '~https:\/\/goo\.gl\/.*~',
@@ -83,7 +83,7 @@ class UrlsMockHandlerTest extends \PHPUnit\Framework\TestCase
     /**
      * @return void
      */
-    public function testCreateWithMiddleware()
+    public function testCreateWithMiddleware(): void
     {
         $stack = $this->handler::createWithMiddleware();
 
@@ -93,7 +93,7 @@ class UrlsMockHandlerTest extends \PHPUnit\Framework\TestCase
     /**
      * @return void
      */
-    public function testInvokeUsingGuzzleClient()
+    public function testInvokeUsingGuzzleClient(): void
     {
         $this->handler->onUriRequested($uri = 'https://goo.gl', $method1 = 'get', new Response(
             $code1 = 200,
@@ -131,11 +131,9 @@ class UrlsMockHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @small
-     *
      * @return void
      */
-    public function testRegisterWithPassingToTopParameter()
+    public function testRegisterWithPassingToTopParameter(): void
     {
         $this->handler->onUriRegexpRequested('~https:\/\/goo\.gl\/.*~', $method = 'post', new Response(
             $code1 = 200,
@@ -161,11 +159,9 @@ class UrlsMockHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @small
-     *
      * @return void
      */
-    public function testRegisterWithoutPassingToTopParameter()
+    public function testRegisterWithoutPassingToTopParameter(): void
     {
         $this->handler->onUriRegexpRequested('~https:\/\/goo\.gl\/.*~', $method = 'post', new Response(
             $code1 = 200,
@@ -191,11 +187,9 @@ class UrlsMockHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @small
-     *
      * @return void
      */
-    public function testSameUriDifferentHttpMethods()
+    public function testSameUriDifferentHttpMethods(): void
     {
         $this->handler->onUriRequested($uri = 'https://goo.gl', $method1 = 'get', new Response($code1 = 201));
         $this->handler->onUriRequested($uri, $method2 = 'patch', new Response($code2 = 202));
@@ -212,11 +206,9 @@ class UrlsMockHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @small
-     *
      * @return void
      */
-    public function testSameUriDifferentHttpMethodsRegex()
+    public function testSameUriDifferentHttpMethodsRegex(): void
     {
         $this->handler->onUriRegexpRequested('~https:\/\/goo\.gl~', $method1 = 'get', new Response($code1 = 201));
         $this->handler->onUriRegexpRequested('~https:\/\/goo\.gl~', $method2 = 'patch', new Response($code2 = 202));
@@ -233,11 +225,9 @@ class UrlsMockHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @small
-     *
      * @return void
      */
-    public function testCaseInsensitiveHttpMethod()
+    public function testCaseInsensitiveHttpMethod(): void
     {
         $this->handler->onUriRequested('https://goo.gl/1', 'GET', new Response(200));
         $this->handler->onUriRequested('https://goo.gl/2', 'get', new Response(200));

@@ -4,6 +4,7 @@ composer.lock
 # IDEs
 /nbproject
 /.idea
+/.vscode
 
 # Vendors
 /vendor
@@ -11,7 +12,8 @@ composer.lock
 # Temp dirs & trash
 /temp
 /tmp
+/install
+/build
 /coverage
-clover-file
 .DS_Store
-/*.cache
+*.cache
