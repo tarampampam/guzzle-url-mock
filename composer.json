@@ -1,6 +1,6 @@
 {
     "name": "tarampampam/guzzle-url-mock",
-    "description": "URLs (fixed and regexps-based) mock handler for Guzzle 6/Guzzle 7",
+    "description": "URLs (fixed and regexps-based) mock handler for Guzzle 6/7",
     "keywords": [
         "guzzle",
         "http",
@@ -16,22 +16,22 @@
         }
     ],
     "require": {
-        "php": ">=7.0",
-        "guzzlehttp/guzzle": "~6.1 || ~7.0"
+        "php": "^7.2",
+        "guzzlehttp/guzzle": "~6.1 || ~7.0",
+        "ext-mbstring": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "~5.7.10 || ^6.4 || ~7.0",
-        "symfony/var-dumper": "~3.2 || ^4.0",
-        "phpstan/phpstan": "~0.9"
+        "phpstan/phpstan": "^0.12"
     },
     "autoload": {
         "psr-4": {
-            "Tarampampam\\GuzzleUrlMock\\": "src"
+            "Tarampampam\\GuzzleUrlMock\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tarampampam\\GuzzleUrlMock\\Tests\\": "tests"
+            "Tarampampam\\GuzzleUrlMock\\Tests\\": "tests/"
         }
     },
     "scripts": {
@@ -50,9 +50,5 @@
     "support": {
         "issues": "https://github.com/tarampampam/guzzle-url-mock/issues",
         "source": "https://github.com/tarampampam/guzzle-url-mock"
-    },
-    "config": {
-        "sort-packages": true
-    },
-    "prefer-stable": true
+    }
 }

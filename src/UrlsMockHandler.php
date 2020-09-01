@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Tarampampam\GuzzleUrlMock;
 
@@ -16,21 +16,21 @@ use GuzzleHttp\Exception\RequestException;
 
 class UrlsMockHandler implements \Countable
 {
-    const METHOD   = 'method';
-
-    const RESPONSE = 'response';
+    public const
+        METHOD = 'method',
+        RESPONSE = 'response';
 
     /**
      * Registered URI regexp patterns.
      *
-     * @var array|array[]
+     * @var array<string, array<mixed>>
      */
     protected $uri_patterns = [];
 
     /**
      * Registered fixed URIs.
      *
-     * @var array|array[]
+     * @var array<string, array<mixed>>
      */
     protected $uri_fixed = [];
 
@@ -44,14 +44,14 @@ class UrlsMockHandler implements \Countable
     /**
      * Options, passed with last processed request.
      *
-     * @var mixed[]|null
+     * @var array<mixed>|null
      */
     protected $last_options;
 
     /**
      * Array with URI of all processed requests.
      *
-     * @var string[]
+     * @var array<string>
      */
     protected $requests_uri_history = [];
 
@@ -59,7 +59,7 @@ class UrlsMockHandler implements \Countable
      * Invoke incoming request.
      *
      * @param RequestInterface $request
-     * @param mixed[]          $options
+     * @param array<mixed>     $options
      *
      * @throws InvalidArgumentException
      * @throws OutOfBoundsException
@@ -162,7 +162,7 @@ class UrlsMockHandler implements \Countable
      *
      * @return void
      */
-    public function onUriRequested(string $uri, string $method, $response)
+    public function onUriRequested(string $uri, string $method, $response): void
     {
         if ($this->validateResponse($response)) {
             $index                   = $this->buildIndex($method, $uri);
@@ -179,13 +179,13 @@ class UrlsMockHandler implements \Countable
      * @param string                                                $uri_pattern
      * @param string                                                $method
      * @param callable|Exception|PromiseInterface|ResponseInterface $response
-     * @param bool                                                  $to_top      Push action into the top of stack
+     * @param bool                                                  $to_top Push action into the top of stack
      *
      * @throws InvalidArgumentException
      *
      * @return void
      */
-    public function onUriRegexpRequested(string $uri_pattern, string $method, $response, bool $to_top = false)
+    public function onUriRegexpRequested(string $uri_pattern, string $method, $response, bool $to_top = false): void
     {
         if (@\preg_match($uri_pattern, '') === false) {
             throw new InvalidArgumentException("Wrong URI pattern [$uri_pattern] passed");
@@ -221,7 +221,7 @@ class UrlsMockHandler implements \Countable
      *
      * @return string|null
      */
-    public function getLastRequestedUri()
+    public function getLastRequestedUri(): ?string
     {
         $count = \count($this->requests_uri_history);
 
@@ -235,7 +235,7 @@ class UrlsMockHandler implements \Countable
      *
      * @return RequestInterface|null
      */
-    public function getLastRequest()
+    public function getLastRequest(): ?RequestInterface
     {
         return $this->last_request;
     }
@@ -245,7 +245,7 @@ class UrlsMockHandler implements \Countable
      *
      * @return mixed[]|null
      */
-    public function getLastOptions()
+    public function getLastOptions(): ?array
     {
         return $this->last_options;
     }
@@ -324,7 +324,8 @@ class UrlsMockHandler implements \Countable
         array $options,
         ResponseInterface $response = null,
         $reason = null
-    ) {
+    ): void
+    {
         if (isset($options['on_stats']) && \is_callable($on_stats = $options['on_stats'])) {
             $on_stats(new TransferStats($request, $response, null, $reason));
         }
@@ -340,7 +341,7 @@ class UrlsMockHandler implements \Countable
      */
     protected function buildIndex(string $method, string $uri): string
     {
-        return mb_strtoupper($method) . ' ' . $uri;
+        return \mb_strtoupper($method) . ' ' . $uri;
     }
 
     /**
@@ -350,8 +351,8 @@ class UrlsMockHandler implements \Countable
      *
      * @return string e.g. ~https:\/\/goo\.gl~
      */
-    private function removeMethodFromPattern($uri_pattern)
+    private function removeMethodFromPattern($uri_pattern): string
     {
-        return mb_substr($uri_pattern, mb_strpos($uri_pattern, ' ') + 1);
+        return \mb_substr($uri_pattern, \mb_strpos($uri_pattern, ' ') + 1);
     }
 }
