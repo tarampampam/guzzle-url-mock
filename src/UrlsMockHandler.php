@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Tarampampam\GuzzleUrlMock;
 
@@ -17,7 +17,8 @@ use GuzzleHttp\Exception\RequestException;
 class UrlsMockHandler implements \Countable
 {
     public const
-        METHOD = 'method',
+        METHOD = 'method';
+    public const
         RESPONSE = 'response';
 
     /**
@@ -179,7 +180,7 @@ class UrlsMockHandler implements \Countable
      * @param string                                                $uri_pattern
      * @param string                                                $method
      * @param callable|Exception|PromiseInterface|ResponseInterface $response
-     * @param bool                                                  $to_top Push action into the top of stack
+     * @param bool                                                  $to_top      Push action into the top of stack
      *
      * @throws InvalidArgumentException
      *
@@ -324,8 +325,7 @@ class UrlsMockHandler implements \Countable
         array $options,
         ResponseInterface $response = null,
         $reason = null
-    ): void
-    {
+    ): void {
         if (isset($options['on_stats']) && \is_callable($on_stats = $options['on_stats'])) {
             $on_stats(new TransferStats($request, $response, null, $reason));
         }
