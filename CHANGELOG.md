@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][keepachangelog] and this project adheres to [Semantic Versioning][semver].
 
+## Unreleased
+
+### Added
+
+- Support PHP `8.x`
+
+### Changed
+
+- Composer `2.x` is supported now
+- Minimal required `phpunit/phpunit` version now is `8.5.4`
+- Minimal required `phpstan/phpstan` version now is `~0.12.34`
+
 ## v1.3.0
 
 ### Changed
