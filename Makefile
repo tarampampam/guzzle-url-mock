@@ -20,7 +20,7 @@ latest: clean ## Install latest php dependencies
 	docker-compose run $(RUN_APP_ARGS) composer update -n --ansi --prefer-dist --prefer-stable
 
 install: clean ## Install regular php dependencies
-	docker-compose run $(RUN_APP_ARGS) composer update -n --prefer-dist --no-interaction
+	docker-compose run $(RUN_APP_ARGS) composer update -n --prefer-dist
 
 lowest: clean ## Install lowest php dependencies
 	docker-compose run $(RUN_APP_ARGS) composer update -n --ansi --prefer-dist --prefer-lowest
