@@ -17,13 +17,13 @@ on:
 jobs: # Docs: <https://help.github.com/en/articles/workflow-syntax-for-github-actions>
   tests:
     name: PHP ${{ matrix.php }} (${{ matrix.setup }} setup)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
         setup: ['basic', 'lowest']
-        php: ['7.2', '7.3', '7.4']
+        php: ['7.2', '7.3', '7.4', '8.0']
         include:
           - php: '7.2'
             setup: 'basic'
@@ -39,8 +39,7 @@ jobs: # Docs: <https://help.github.com/en/articles/workflow-syntax-for-github-ac
         uses: shivammathur/setup-php@v2 # Action page: <https://github.com/shivammathur/setup-php>
         with:
           php-version: ${{ matrix.php }}
-          extensions: mbstring
-          tools: composer:v1 # TODO update composer up to v2
+          extensions: mbstring, xdebug
 
       - name: Get Composer Cache Directory # Docs: <https://github.com/actions/cache/blob/master/examples.md#php---composer>
         id: composer-cache
@@ -53,18 +52,15 @@ jobs: # Docs: <https://help.github.com/en/articles/workflow-syntax-for-github-ac
           key: ${{ runner.os }}-composer-${{ matrix.setup }}-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
-      - name: Install Composer 'hirak/prestissimo' package
-        run: composer global require hirak/prestissimo --update-no-dev --no-progress --ansi
-
       - name: Install lowest Composer dependencies
         if: matrix.setup == 'lowest'
-        run: composer update --prefer-dist --no-interaction --no-suggest --prefer-lowest --ansi
+        run: composer update --prefer-dist --no-interaction --prefer-lowest --ansi
 
       - name: Install basic Composer dependencies
         if: matrix.setup == 'basic'
-        run: composer update --prefer-dist --no-interaction --no-suggest --ansi
+        run: composer update --prefer-dist --no-interaction --ansi
 
-      - name: Show most important packages versions
+      - name: Show most important package versions
         run: composer info | grep -e guzzle -e phpunit/phpunit -e phpstan/phpstan
 
       - name: Execute tests
@@ -73,6 +69,8 @@ jobs: # Docs: <https://help.github.com/en/articles/workflow-syntax-for-github-ac
 
       - name: Execute tests with code coverage
         if: matrix.coverage == 'true'
+        env:
+          XDEBUG_MODE: coverage
         run: composer test-cover
 
       - uses: codecov/codecov-action@v1 # Docs: <https://github.com/codecov/codecov-action>
